@@ -1,26 +1,28 @@
-# ExoFinder - Exoplanet Classification Web Application
+# ExoFinder - Multi-Mission Exoplanet Classification Web Application
 
-ExoFinder is a web application that classifies exoplanet candidates as **CONFIRMED**, **CANDIDATE**, or **FALSE POSITIVE** using a pre-trained RandomForest machine learning model.
+ExoFinder is an advanced web application that classifies exoplanet candidates from **Kepler**, **K2**, and **TESS** missions as **CONFIRMED**, **CANDIDATE**, or **FALSE POSITIVE** using pre-trained machine learning models.
 
 ## 🚀 Features
 
 ### Core Functionality
+- **Multi-Mission Support**: Kepler, K2, and TESS data compatibility
 - **CSV Upload**: Batch process multiple exoplanet candidates from CSV files
 - **Manual Input**: Single prediction with manual feature input
 - **Real-time Predictions**: Instant classification with confidence scores
 - **Results Download**: Export predictions as CSV files
-- **Modern UI**: Beautiful, responsive interface with Bootstrap
+- **ExoAI Chat**: AI-powered assistant for exoplanet research questions
+- **Modern UI**: Beautiful space-themed interface with particle effects
 
 ### Model Integration
-- Pre-trained RandomForest classifier
+- **Kepler**: RandomForest classifier from GitHub
+- **K2**: Stacked ensemble model (local)
+- **TESS**: Neural network with label encoding (local)
 - Handles missing data gracefully
 - Provides confidence scores and probability breakdowns
-- Trained on Kepler mission data format
 
-## 📋 Required Features
+## 📋 Required Features by Mission
 
-The application expects CSV files or manual inputs with the following Kepler-compatible columns:
-
+### Kepler Mission
 | Feature | Description | Unit |
 |---------|-------------|------|
 | `koi_period` | Orbital Period | days |
@@ -33,6 +35,12 @@ The application expects CSV files or manual inputs with the following Kepler-com
 | `koi_incl` | Inclination | degrees |
 | `koi_insol` | Insolation Flux | Earth flux |
 
+### K2 Mission
+Similar to Kepler with additional preprocessing for K2-specific data format.
+
+### TESS Mission
+Optimized for TESS data format with neural network classification.
+
 ## 🛠️ Installation & Setup
 
 ### Prerequisites
@@ -41,10 +49,15 @@ The application expects CSV files or manual inputs with the following Kepler-com
 
 ### Installation Steps
 
-1. **Clone or download the project files**
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/jcarljuson/ExoFinder-by-Aethereologists.git
+   cd ExoFinder-by-Aethereologists
+   ```
+
 2. **Install dependencies:**
    ```bash
-   pip install Flask pandas numpy scikit-learn joblib requests
+   pip install -r requirements.txt
    ```
    
 3. **Run the application:**
@@ -59,47 +72,59 @@ The application expects CSV files or manual inputs with the following Kepler-com
 
 ## 📖 Usage Guide
 
+### Mission Selection
+1. Select your mission (Kepler, K2, or TESS) from the dropdown
+2. The interface will adapt to show mission-specific features
+
 ### CSV Upload Method
 1. Click on the **CSV Upload** tab
-2. Drag and drop your CSV file or click to browse
-3. Ensure your CSV contains the required columns
-4. View results in the interactive table
-5. Download predictions using the **Download Results** button
+2. Select your mission from the dropdown
+3. Drag and drop your CSV file or click to browse
+4. Ensure your CSV contains the required columns for the selected mission
+5. View results in the interactive table
+6. Download predictions using the **Download Results** button
 
 ### Manual Input Method
 1. Click on the **Manual Input** tab
-2. Fill in the feature values in the form
-3. Click **Predict Classification**
-4. View the prediction result with confidence score
+2. Select your mission from the dropdown
+3. Fill in the feature values in the mission-specific form
+4. Click **Predict Classification**
+5. View the prediction result with confidence score
+
+### ExoAI Chat
+1. Click on the **ExoAI** tab
+2. Ask questions about exoplanets, missions, or your data
+3. Get AI-powered responses with proper formatting
 
 ### Sample Data
-A sample CSV file (`sample_data.csv`) is included for testing:
-```csv
-koi_period,koi_duration,koi_depth,koi_prad,koi_teq,koi_srho,koi_sma,koi_incl,koi_insol
-365.25,6.5,1000,1.2,288,1.4,1.0,90,1.0
-10.5,3.2,500,0.8,800,2.1,0.1,85,25.0
-...
-```
+Sample CSV files are included for each mission:
+- `sample_kepler_data.csv` - Kepler mission format
+- `sample_k2_data.csv` - K2 mission format  
+- `sample_tess_data.csv` - TESS mission format
 
 ## 🔧 Technical Details
 
 ### Architecture
-- **Backend**: Flask web framework
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
-- **ML Model**: RandomForest classifier (scikit-learn)
-- **Data Processing**: pandas, numpy
+- **Backend**: Flask web framework with rate limiting
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript, Bootstrap 5
+- **ML Models**: Multiple models for different missions
+- **Data Processing**: pandas, numpy, scikit-learn, tensorflow
+- **UI**: Space-themed design with particle animations
 
 ### File Structure
 ```
 ExoFinder/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── sample_data.csv       # Sample test data
+├── app.py                    # Main Flask application
+├── requirements.txt          # Python dependencies
+├── sample_*_data.csv        # Sample test data for each mission
+├── *_model.pkl              # Pre-trained ML models
+├── *_scaler.pkl             # Feature scalers
 ├── templates/
-│   └── index.html        # Main web interface
+│   └── index.html           # Main web interface
 ├── static/
-│   └── app.js           # Frontend JavaScript
-└── README.md            # This file
+│   ├── app.js              # Frontend JavaScript
+│   └── space-theme.css     # Space-themed styling
+└── README.md               # This file
 ```
 
 ### API Endpoints
@@ -107,34 +132,52 @@ ExoFinder/
 - `POST /predict_csv` - CSV file upload and batch prediction
 - `POST /predict_manual` - Single prediction from manual input
 - `POST /download_results` - Download results as CSV
+- `POST /api/chat` - ExoAI chat functionality
+
+## 🚀 Deployment
+
+### Render Deployment
+This application is configured for easy deployment on Render:
+
+1. **Push to GitHub** (already done)
+2. **Create Render Web Service**:
+   - Connect your GitHub repository
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `gunicorn app:app`
+   - Environment: Python 3
+
+### Environment Variables
+- `PORT`: Automatically set by Render
+- `FLASK_ENV`: Set to `production` for deployment
 
 ## ⚠️ Important Notes
 
 ### Model Information
-- **Demo Model**: The current implementation uses a demonstration model for testing
-- **Training Data**: Model is designed for Kepler mission data format
-- **Purpose**: Intended for research and demonstration purposes
-- **Accuracy**: Demo model accuracy may vary from production models
+- **Kepler**: Production RandomForest model from GitHub
+- **K2**: Stacked ensemble model trained on K2 data
+- **TESS**: Neural network with label encoding
+- **Purpose**: Research and demonstration purposes
+- **Accuracy**: Models trained on real mission data
 
 ### Data Preprocessing
-- Missing values are filled with median values
-- Missing columns are filled with zeros (not ideal for production)
-- Input features are automatically reordered to match model expectations
+- Mission-specific preprocessing pipelines
+- Automatic feature scaling and encoding
+- Handles missing values appropriately for each mission
+- Input validation and error handling
 
 ### Limitations
 - Maximum file size: 16MB
 - Supported format: CSV only
-- Model URL in code is placeholder (replace with actual model URL)
+- Rate limiting: 100 requests per hour per IP
 
 ## 🔮 Future Enhancements
 
-- [ ] Load actual pre-trained model from URL
-- [ ] Add data validation and error handling
-- [ ] Implement proper feature scaling
 - [ ] Add visualization charts for results
 - [ ] Support for additional file formats
 - [ ] Model performance metrics display
 - [ ] User authentication and session management
+- [ ] Advanced filtering and search capabilities
+- [ ] Integration with astronomical databases
 
 ## 📄 License
 
@@ -150,8 +193,8 @@ This project is for educational and research purposes. Please ensure compliance 
 
 ## 📞 Support
 
-For questions or issues, please refer to the documentation or create an issue in the project repository.
+For questions or issues, please create an issue in the project repository or use the ExoAI chat feature for assistance.
 
 ---
 
-**Disclaimer**: This application is trained on Kepler mission data and is intended for demonstration and research purposes only. Results should be validated against official astronomical databases for scientific use.
+**Disclaimer**: This application uses models trained on real mission data from Kepler, K2, and TESS. Results should be validated against official astronomical databases for scientific use.
