@@ -1,0 +1,4 @@
+pl_name,pl_orbper,pl_orbsmax,pl_rade,pl_radj,pl_masse,pl_massj,pl_trandep,pl_trandur,pl_ratdor,pl_ratror,pl_occdep,tran_flag,ptv_flag,ast_flag,etv_flag,st_teff,st_rad,st_mass,st_logg,st_met,st_lum,sy_dist,sy_pm,sy_bmag,sy_vmag,sy_jmag,sy_hmag,sy_kmag,k2_campaigns_num,pl_orbeccen,pl_insol
+K2-1 b,3.5,0.045,1.2,0.11,2.1,0.007,0.002,2.5,8.5,0.08,0.0001,1,0,0,0,5800,1.1,1.05,4.4,0.1,1.2,150,25.5,12.5,11.8,10.2,9.8,9.5,5,0.1,1.0
+K2-2 b,7.2,0.078,0.9,0.08,1.5,0.005,0.0015,3.2,12.1,0.06,0.00008,1,0,0,0,6200,0.95,0.98,4.5,0.05,0.85,200,18.2,13.1,12.4,10.8,10.3,10.0,8,0.1,1.0
+K2-3 b,15.6,0.125,2.1,0.19,8.5,0.027,0.003,4.1,15.8,0.12,0.0002,1,0,0,0,5400,1.25,1.15,4.3,0.2,1.8,95,32.1,11.9,11.2,9.5,9.1,8.8,12,0.1,1.0

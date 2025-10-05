@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExoFinder - Multi-Mission Exoplanet Classification System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='space-theme.css') }}">
+</head>
+<body>
+    <div class="space-background">
+        <!-- Nebula Effect -->
+        <div class="nebula-effect"></div>
+        
+        <!-- Compact Header -->
+        <header class="space-header-compact">
+            <div class="container-fluid">
+                <div class="header-content-compact">
+                    <div class="logo-section-compact">
+                        <i class="fas fa-satellite logo-icon-compact"></i>
+                        <h1 class="logo-text-compact">ExoFinder</h1>
+                        <small class="subtitle-compact">by Aethereologists</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Container -->
+        <div class="main-container-compact">
+            <div class="container-fluid">
+                <div class="row g-3">
+                    <!-- Left Column: Mission & Input -->
+                    <div class="col-lg-6">
+                        <!-- Mission Selection -->
+                        <div class="space-section-compact">
+                            <h5><i class="fas fa-satellite"></i> Mission</h5>
+                            <div class="mission-grid-compact">
+                                <input type="radio" id="kepler" name="mission" value="kepler" class="mission-radio" checked>
+                                <label for="kepler" class="mission-card-compact">
+                                    <div class="mission-icon-compact">🔭</div>
+                                    <div class="mission-name-compact">Kepler</div>
+                                </label>
+
+                                <input type="radio" id="tess" name="mission" value="tess" class="mission-radio">
+                                <label for="tess" class="mission-card-compact">
+                                    <div class="mission-icon-compact">🛰️</div>
+                                    <div class="mission-name-compact">TESS</div>
+                                </label>
+
+                                <input type="radio" id="k2" name="mission" value="k2" class="mission-radio">
+                                <label for="k2" class="mission-card-compact">
+                                    <div class="mission-icon-compact">🌌</div>
+                                    <div class="mission-name-compact">K2</div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Input Method Tabs -->
+                        <div class="space-section-compact">
+                            <div class="tab-nav-compact">
+                                <button class="tab-btn active" data-tab="upload">
+                                    <i class="fas fa-upload"></i> CSV Upload
+                                </button>
+                                <button class="tab-btn" data-tab="manual">
+                                    <i class="fas fa-keyboard"></i> Manual Input
+                                </button>
+                            </div>
+
+                            <!-- CSV Upload Tab -->
+                            <div class="tab-content active" id="uploadTab">
+                                <div class="upload-zone" id="uploadZone">
+                                    <div class="upload-content">
+                                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                        <p class="upload-text">Drop CSV file here or click to browse</p>
+                                        <small class="upload-hint">Supports .csv files up to 10MB</small>
+                                    </div>
+                                    <input type="file" id="csvFile" accept=".csv" style="display: none;">
+                                </div>
+
+                                <!-- File Info -->
+                                <div class="file-info" id="fileInfo" style="display: none;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-file-csv text-success me-2"></i>
+                                        <span id="fileName"></span>
+                                        <button class="btn btn-sm btn-outline-danger ms-auto" id="removeFile">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Predict Button -->
+                                <div class="predict-section" id="csvPredictSection" style="display: none;">
+                                    <button class="btn btn-primary w-100" id="csvPredictBtn">
+                                        <i class="fas fa-rocket"></i> Predict Classifications
+                                    </button>
+                                </div>
+
+                                <!-- Loading -->
+                                <div class="loading-compact" id="csvLoading" style="display: none;">
+                                    <div class="d-flex align-items-center">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                                        <span>Processing...</span>
+                                    </div>
+                                </div>
+
+                                <!-- Error -->
+                                <div id="csvError" class="alert alert-danger" style="display: none;"></div>
+                            </div>
+
+                            <!-- Manual Input Tab -->
+                            <div class="tab-content" id="manualTab">
+                                <form id="manualForm" class="manual-form-compact">
+                                    <div id="manualFormFields">
+                                        <!-- Dynamic form fields -->
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-rocket"></i> Predict
+                                    </button>
+                                </form>
+
+                                <!-- Manual Loading -->
+                                <div class="loading-compact" id="manualLoading" style="display: none;">
+                                    <div class="d-flex align-items-center">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                                        <span>Making prediction...</span>
+                                    </div>
+                                </div>
+
+                                <!-- Manual Error -->
+                                <div id="manualError" class="alert alert-danger" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Advanced Options & Results -->
+                    <div class="col-lg-6">
+                        <!-- Manual Prediction Result -->
+                        <div class="space-section-compact">
+                            <div class="prediction-result" id="manualResult" style="display: none;">
+                                <div class="result-card">
+                                    <h6>Prediction Result</h6>
+                                    <div class="result-value">
+                                        <span class="result-label">Predicted Class:</span>
+                                        <span class="result-class" id="predictionClass"></span>
+                                    </div>
+                                    <div class="result-confidence">
+                                        <span class="result-label">Confidence:</span>
+                                        <span id="predictionConfidence"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mission Requirements -->
+                        <div class="space-section-compact">
+                            <h5><i class="fas fa-list-check"></i> Mission Requirements</h5>
+                            
+                            <!-- Kepler Mission Requirements -->
+                            <div class="mission-columns" id="kepler-columns">
+                                <div class="alert alert-info alert-sm">
+                                    <div class="column-tooltip-container">
+                                        <strong>Kepler Mission Requirements</strong>
+                                        <i class="fas fa-info-circle column-info-icon" style="margin-left: 8px; cursor: pointer; color: var(--primary-color);"></i>
+                                        <div class="column-tooltip">
+                                            <strong>Required Columns (16):</strong><br>
+                                            koi_period, koi_impact, koi_duration, koi_depth, koi_prad, koi_teq, koi_insol, koi_dor, koi_count, koi_num_transits, koi_max_sngle_ev, koi_max_mult_ev, koi_model_snr, koi_tce_plnt_num, koi_steff, koi_srad
+                                        </div>
+                                    </div>
+                                    <br>
+                                    Required Columns: 16 columns<br>
+                                    Optional Identifiers: <span id="keplerIdentifier1Text">kepoi_name</span>, <span id="keplerIdentifier2Text">kepler_name</span>
+                                </div>
+                            </div>
+                            
+                            <!-- TESS Mission Requirements -->
+                            <div class="mission-columns" id="tess-columns" style="display: none;">
+                                <div class="alert alert-info alert-sm">
+                                    <div class="column-tooltip-container">
+                                        <strong>TESS Mission Requirements</strong>
+                                        <i class="fas fa-info-circle column-info-icon" style="margin-left: 8px; cursor: pointer; color: var(--primary-color);"></i>
+                                        <div class="column-tooltip">
+                                            <strong>Required Columns (11):</strong><br>
+                                            pl_orbper, pl_trandur, pl_rade, pl_insol, pl_eqt, st_teff, st_logg, st_rad, st_tmag, sy_dist, pl_tranflag
+                                        </div>
+                                    </div>
+                                    <br>
+                                    Required Columns: 11 columns<br>
+                                    Optional Identifiers: <span id="tessIdentifier1Text">pl_name</span>
+                                </div>
+                            </div>
+                            
+                            <!-- K2 Mission Requirements -->
+                            <div class="mission-columns" id="k2-columns" style="display: none;">
+                                <div class="alert alert-info alert-sm">
+                                    <div class="column-tooltip-container">
+                                        <strong>K2 Mission Requirements</strong>
+                                        <i class="fas fa-info-circle column-info-icon" style="margin-left: 8px; cursor: pointer; color: var(--primary-color);"></i>
+                                        <div class="column-tooltip">
+                                            <strong>Required Columns (31):</strong><br>
+                                            pl_orbper, pl_orbsmax, pl_rade, pl_bmasse, pl_orbeccen, pl_insol, pl_eqt, pl_tranflag, pl_rvflag, pl_astflag, pl_cbflag, pl_angsep, pl_orbtper, st_refname, st_spectype, st_teff, st_rad, st_mass, st_met, st_metratio, st_logg, st_age, st_dens, st_lum, st_uj, st_vj, st_bj, st_rc, st_ic, sy_kepmag, sy_kmag
+                                        </div>
+                                    </div>
+                                    <br>
+                                    Required Columns: 31 columns<br>
+                                    Optional Identifiers: <span id="k2Identifier1Text">pl_name</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sample Data Downloads -->
+                        <div class="space-section-compact">
+                            <h5><i class="fas fa-download"></i> Sample Data</h5>
+                            <div class="d-grid gap-1">
+                                <button class="btn btn-sm btn-outline-primary" onclick="downloadSampleData('kepler')">
+                                    <i class="fas fa-download me-1"></i> Kepler
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="downloadSampleData('tess')">
+                                    <i class="fas fa-download me-1"></i> TESS
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="downloadSampleData('k2')">
+                                    <i class="fas fa-download me-1"></i> K2
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Options -->
+                        <div class="space-section-compact">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h5><i class="fas fa-cog"></i> Options <span class="text-warning">(Experimental)</span></h5>
+                                <button class="btn btn-sm btn-outline-primary" id="advancedOptionsBtn">
+                                    <i class="fas fa-chevron-down"></i> Advanced
+                                </button>
+                            </div>
+
+                            <!-- Collapsible Feature Selection -->
+                            <div class="collapse" id="featureSelectionPanel">
+                                <div class="feature-selection-compact">
+                                    <div class="alert alert-warning alert-sm">
+                                        <i class="fas fa-exclamation-triangle"></i> <strong>Important:</strong> It's better to have all features turned on for best possible accuracy. Missing columns may lead to inaccurate predictions.
+                                    </div>
+
+                                    <!-- Kepler Features -->
+                                    <div class="feature-group-compact" id="kepler-features">
+                                        <h6>Kepler Features</h6>
+                                        <div class="feature-grid-compact">
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="kepler-feature" value="koi_period" checked>
+                                                <span>Orbital Period</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="kepler-feature" value="koi_impact" checked>
+                                                <span>Impact Parameter</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="kepler-feature" value="koi_duration" checked>
+                                                <span>Transit Duration</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="kepler-feature" value="koi_depth" checked>
+                                                <span>Transit Depth</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="kepler-feature" value="koi_prad" checked>
+                                                <span>Planet Radius</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="kepler-feature" value="koi_teq" checked>
+                                                <span>Equilibrium Temp</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="kepler-feature" value="koi_insol" checked>
+                                                <span>Insolation Flux</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="kepler-feature" value="koi_dror" checked>
+                                                <span>Radius Ratio</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- TESS Features -->
+                                    <div class="feature-group-compact" id="tess-features" style="display: none;">
+                                        <h6>TESS Features</h6>
+                                        <div class="feature-grid-compact">
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="pl_orbper" checked>
+                                                <span>Orbital Period</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="pl_trandurh" checked>
+                                                <span>Transit Duration Hours</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="pl_trandep" checked>
+                                                <span>Transit Depth</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="pl_rade" checked>
+                                                <span>Planet Radius</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="pl_insol" checked>
+                                                <span>Insolation Flux</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="pl_eqt" checked>
+                                                <span>Equilibrium Temperature</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="st_teff" checked>
+                                                <span>Stellar Temperature</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="st_logg" checked>
+                                                <span>Stellar Surface Gravity</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="st_rad" checked>
+                                                <span>Stellar Radius</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="st_tmag" checked>
+                                                <span>TESS Magnitude</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="tess-feature" value="st_dist" checked>
+                                                <span>Stellar Distance</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- K2 Features -->
+                                    <div class="feature-group-compact" id="k2-features" style="display: none;">
+                                        <h6>K2 Features</h6>
+                                        <div class="feature-grid-compact">
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_orbper" checked>
+                                                <span>Orbital Period</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_orbsmax" checked>
+                                                <span>Semi-Major Axis</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_rade" checked>
+                                                <span>Planet Radius</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_radj" checked>
+                                                <span>Planet Radius Jupiter</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_masse" checked>
+                                                <span>Planet Mass Earth</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_massj" checked>
+                                                <span>Planet Mass Jupiter</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_trandep" checked>
+                                                <span>Transit Depth</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_trandur" checked>
+                                                <span>Transit Duration</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_ratdor" checked>
+                                                <span>Planet-Star Distance Ratio</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_ratror" checked>
+                                                <span>Planet-Star Radius Ratio</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_occdep" checked>
+                                                <span>Occultation Depth</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="tran_flag" checked>
+                                                <span>Transit Flag</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="ptv_flag" checked>
+                                                <span>PTV Flag</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="ast_flag" checked>
+                                                <span>Astrometry Flag</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="etv_flag" checked>
+                                                <span>ETV Flag</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="st_teff" checked>
+                                                <span>Stellar Temperature</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="st_rad" checked>
+                                                <span>Stellar Radius</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="st_mass" checked>
+                                                <span>Stellar Mass</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="st_logg" checked>
+                                                <span>Stellar Surface Gravity</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="st_met" checked>
+                                                <span>Stellar Metallicity</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="st_lum" checked>
+                                                <span>Stellar Luminosity</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="sy_dist" checked>
+                                                <span>System Distance</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="sy_pm" checked>
+                                                <span>Proper Motion</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="sy_bmag" checked>
+                                                <span>B Magnitude</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="sy_vmag" checked>
+                                                <span>V Magnitude</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="sy_jmag" checked>
+                                                <span>J Magnitude</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="sy_hmag" checked>
+                                                <span>H Magnitude</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="sy_kmag" checked>
+                                                <span>K Magnitude</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="k2_campaigns_num" checked>
+                                                <span>K2 Campaign Number</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_orbeccen" checked>
+                                                <span>Orbital Eccentricity</span>
+                                            </label>
+                                            <label class="feature-checkbox-compact">
+                                                <input type="checkbox" class="k2-feature" value="pl_insol" checked>
+                                                <span>Insolation Flux</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Section -->
+                        <div class="space-section-compact">
+                            <div class="results-container-compact" id="csvResults" style="display: none;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5><i class="fas fa-chart-bar"></i> Results</h5>
+                                    <button class="btn btn-sm btn-success" id="downloadBtn">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                </div>
+                                <div class="results-table-compact">
+                                    <table class="table table-sm table-striped" id="resultsTable">
+                                        <thead class="table-dark">
+                                        <tr>
+                                            <th>Class</th>
+                                            <th>Confidence</th>
+                                            <th id="identifier1Header">ID</th>
+                                            <th id="identifier2Header">ID</th>
+                                            <th>Row</th>
+                                        </tr>
+                                    </thead>
+                                        <tbody id="resultsTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script></div>
+</div>
+
+<!-- ExoAI Assistant -->
+<div id="exoai-spaceship" class="exoai-spaceship" title="ExoAI Assistant">
+    <svg width="70" height="70" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <!-- Spaceship Body -->
+        <ellipse cx="30" cy="35" rx="12" ry="20" fill="#4a90e2" stroke="#2c5aa0" stroke-width="2"/>
+        <!-- Cockpit -->
+        <ellipse cx="30" cy="25" rx="8" ry="10" fill="#87ceeb" stroke="#4a90e2" stroke-width="1"/>
+        <!-- Wings -->
+        <path d="M18 40 L10 45 L15 50 L22 45 Z" fill="#2c5aa0"/>
+        <path d="M42 40 L50 45 L45 50 L38 45 Z" fill="#2c5aa0"/>
+        <!-- Engines -->
+        <circle cx="25" cy="52" r="3" fill="#ff6b6b"/>
+        <circle cx="35" cy="52" r="3" fill="#ff6b6b"/>
+        <!-- Stars -->
+        <circle cx="15" cy="15" r="1" fill="#ffd700"/>
+        <circle cx="45" cy="10" r="1" fill="#ffd700"/>
+        <circle cx="50" cy="25" r="1" fill="#ffd700"/>
+    </svg>
+    <div class="exoai-pulse"></div>
+    <div class="exoai-label">ExoAI</div>
+</div>
+
+<!-- ExoAI Chat Modal -->
+<div id="exoai-chat-modal" class="exoai-chat-modal">
+    <div class="exoai-chat-container">
+        <div class="exoai-chat-header">
+            <div class="exoai-header-content">
+                <svg width="30" height="30" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="30" cy="35" rx="12" ry="20" fill="#4a90e2"/>
+                    <ellipse cx="30" cy="25" rx="8" ry="10" fill="#87ceeb"/>
+                    <circle cx="25" cy="52" r="3" fill="#ff6b6b"/>
+                    <circle cx="35" cy="52" r="3" fill="#ff6b6b"/>
+                </svg>
+                <div>
+                    <h3>ExoAI Assistant</h3>
+                    <p>Your space exploration companion</p>
+                </div>
+            </div>
+            <button id="exoai-close" class="exoai-close">&times;</button>
+        </div>
+        
+        <div id="exoai-chat-messages" class="exoai-chat-messages">
+            <div class="exoai-message exoai-assistant">
+                <div class="exoai-message-content">
+                    🚀 Hello! I'm ExoAI, your guide to the ExoFinder platform! ExoFinder is a cutting-edge exoplanet discovery tool developed by the brilliant Aethereologists - a team of space enthusiasts dedicated to unlocking the mysteries of distant worlds. Our platform harnesses machine learning to analyze NASA's Kepler, K2, and TESS mission data, helping identify potential exoplanets with unprecedented accuracy. Whether you're a scientist, student, or space enthusiast, I'm here to help you navigate the cosmos and discover new worlds! ✨
+                </div>
+            </div>
+        </div>
+        
+        <div class="exoai-chat-input-container">
+            <input type="text" id="exoai-chat-input" placeholder="Ask about exoplanets, space missions, astronomy..." maxlength="500">
+            <button id="exoai-send-btn" class="exoai-send-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div id="exoai-loading" class="exoai-loading" style="display: none;">
+            <div class="exoai-typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span>ExoAI is thinking...</span>
+        </div>
+    </div>
+</div>
+
+<!-- Particle container for fire effects -->
+<div id="particle-container" class="particle-container"></div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
