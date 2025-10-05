@@ -30,7 +30,7 @@ model = None
 # Mission-specific configurations
 MISSION_CONFIGS = {
     'kepler': {
-        'model_url': 'https://github.com/jcarljuson/testfieee22/raw/main/kepler_rf_model%20(8).pkl',
+        'model_path': 'kepler_rf_model.pkl',
         'required_features': [
             'koi_period', 'koi_duration', 'koi_depth', 'koi_prad', 
             'koi_teq', 'koi_srho', 'koi_sma', 'koi_incl', 'koi_insol',
@@ -84,19 +84,10 @@ def load_model(mission='kepler'):
 
     try:
         if mission == 'kepler':
-            # Load Kepler model from URL
-            model_url = config['model_url']
-            print(f"Loading {mission} model from {model_url}...")
-            response = requests.get(model_url, timeout=30)
-            response.raise_for_status()
-
-            # Save to temporary file and load
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.pkl') as tmp_file:
-                tmp_file.write(response.content)
-                tmp_file_path = tmp_file.name
-
-            models[mission] = joblib.load(tmp_file_path)
-            os.unlink(tmp_file_path)  # Clean up temp file
+            # Load Kepler model from local file
+            model_path = config['model_path']
+            print(f"Loading {mission} model from {model_path}...")
+            models[mission] = joblib.load(model_path)
             
             # Set legacy model variable for backward compatibility
             model = models[mission]
