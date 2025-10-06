@@ -20,7 +20,9 @@ CHAT_RATE_LIMIT = 15  # requests per minute
 CHAT_TIME_WINDOW = 60  # seconds
 
 # Secure API key from environment variable
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyAhLBT_hdi2lVKgJwAnqP2xV0ON9dlHbHU')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+if not GEMINI_API_KEY:
+    raise EnvironmentError("GEMINI_API_KEY is not set. Please configure it as an environment variable.")
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
