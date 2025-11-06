@@ -51,4 +51,4 @@ ExoFinder is a comprehensive machine learning application that analyzes data fro
 
 Developed by the **Aethereologists** team for NASA Space Apps Challenge, ExoFinder democratizes exoplanet discovery by making advanced ML models accessible to researchers, students, and space enthusiasts worldwide.
 
-**Live Demo**: Experience the power of AI-driven exoplanet detection!
+**Demo**: https://youtu.be/YCnoxsLb9yI?si=pqNBYh9iZitsVDSP
