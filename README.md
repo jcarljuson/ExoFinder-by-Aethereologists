@@ -1,10 +1,10 @@
-# 🌌 ExoFinder by Aethereologists
+#  ExoFinder by Aethereologists
 
 **Advanced Multi-Mission Exoplanet Detection & Analysis Platform**
 
 ExoFinder is a comprehensive machine learning application that analyzes data from NASA's major exoplanet detection missions: **Kepler**, **K2**, and **TESS**. Using sophisticated ensemble models, it predicts exoplanet candidates and provides detailed analysis through an intuitive web interface.
 
-## 🚀 Features
+##  Features
 
 - **Multi-Mission Support**: Kepler, K2, and TESS data analysis
 - **Advanced ML Models**: Random Forest, Stacked Ensemble, and Neural Networks
@@ -13,7 +13,7 @@ ExoFinder is a comprehensive machine learning application that analyzes data fro
 - **Batch Processing**: Analyze multiple candidates simultaneously
 - **Real-time Predictions**: Instant classification results
 
-## 🔬 Technical Details
+##  Technical Details
 
 ### Machine Learning Models:
 - **Kepler**: Random Forest Classifier
@@ -27,7 +27,7 @@ ExoFinder is a comprehensive machine learning application that analyzes data fro
 - Signal-to-noise ratios
 - Contamination flags
 
-## 🎯 How to Use
+## How to Use
 
 1. **Select Mission**: Choose Kepler, K2, or TESS
 2. **Input Data**: Upload CSV file or enter parameters manually
@@ -35,7 +35,7 @@ ExoFinder is a comprehensive machine learning application that analyzes data fro
 4. **Download Results**: Export analysis for further research
 5. **Ask ExoAI**: Get expert insights about exoplanets
 
-## 🌟 About
+## About
 
 Developed by the **Aethereologists** team for NASA Space Apps Challenge, ExoFinder democratizes exoplanet discovery by making advanced ML models accessible to researchers, students, and space enthusiasts worldwide.
 
