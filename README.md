@@ -1,15 +1,3 @@
----
-title: ExoFinder by Aethereologists
-emoji: 🌌
-colorFrom: purple
-colorTo: blue
-sdk: gradio
-sdk_version: 4.44.0
-app_file: hf_app.py
-pinned: false
-license: mit
----
-
 # 🌌 ExoFinder by Aethereologists
 
 **Advanced Multi-Mission Exoplanet Detection & Analysis Platform**
